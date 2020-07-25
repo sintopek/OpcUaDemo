@@ -15,7 +15,7 @@ variables:
   containerRegistry: 'highhillsoftware.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   #tag: '$(Build.BuildId)'
-  #tag: 'latest'
+  tag: 'latest'
   
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
