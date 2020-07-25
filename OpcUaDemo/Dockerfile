@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["OpcUaDemo/OpcUaDemo.csproj", "OpcUaDemo/"]
+COPY ["OpcUaDemo.csproj", "OpcUaDemo/"]
 RUN dotnet restore "OpcUaDemo/OpcUaDemo.csproj"
 COPY . .
 WORKDIR "/src/OpcUaDemo"
