@@ -13,7 +13,7 @@ variables:
   dockerRegistryServiceConnection: '4f666e7a-34e3-4e16-aeb3-0a9d05c9a5e5'
   imageRepository: 'opcuademo'
   containerRegistry: 'highhillsoftware.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/OpcUaDemo/Dockerfile'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   
   # Agent VM image name
