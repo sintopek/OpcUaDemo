@@ -14,7 +14,8 @@ variables:
   imageRepository: 'opcuademo'
   containerRegistry: 'highhillsoftware.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
+  #tag: '$(Build.BuildId)'
+  #tag: 'latest'
   
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
