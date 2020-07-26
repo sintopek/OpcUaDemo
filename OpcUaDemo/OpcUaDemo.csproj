@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Symbols" Version="1.4.362.42" />
   </ItemGroup>
 
