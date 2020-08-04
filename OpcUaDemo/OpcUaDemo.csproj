@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Symbols" Version="1.4.362.42" />
+    <PackageReference Include="Syncfusion.Blazor" Version="18.2.0.48" />
+    <PackageReference Include="Syncfusion.Licensing" Version="18.2.0.48" />
   </ItemGroup>
 
 </Project>

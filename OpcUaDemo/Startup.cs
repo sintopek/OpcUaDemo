@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpcUaDemo.Data;
+using Syncfusion.Blazor;
 
 namespace OpcUaDemo
 {
@@ -29,11 +30,13 @@ namespace OpcUaDemo
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<OpcService>();
+            services.AddSyncfusionBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjk4NjIzQDMxMzgyZTMyMmUzMGQ5VXRpWDdpdElkK1dONUhsVEc4bWdzMFliQkFLQnl6RXhsb0wxUzkwVmc9");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

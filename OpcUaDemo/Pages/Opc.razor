@@ -1,5 +1,5 @@
 ﻿@page "/opc"
-
+@using Syncfusion.Blazor.Navigations
 @using OpcUaDemo.Data
 @inject OpcService OpcService
 
@@ -28,17 +28,23 @@
     </div>
 
 </EditForm>
-
+<br />
 <EditForm Model="@opcNode" OnValidSubmit="@SetOpc">
     <DataAnnotationsValidator />
-    <div>
+    <div style="">
         <div class="row">
             <div class="form-group col-md-3">
                 <label class="label"> VALUES</label>
             </div>
             <div class="form-group col-md-6">
-                <InputText class="form-control" @bind-Value="opcNode.Value" />
-                <span class="err"><ValidationMessage For="@(() => opcNode.Value)" /></span>
+               
+                <div class="control-section">
+                    <div class="control_wrapper">
+                        <SfTreeView TValue="TreeItem" AllowEditing="true">
+                            <TreeViewFieldsSettings DataSource="@TreeDataSource" Id="NodeId" Text="NodeText" Expanded="Expanded" Child="@("Child")"></TreeViewFieldsSettings>
+                        </SfTreeView>
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <div class="text-center">
@@ -69,5 +75,61 @@
     void SetOpc()
     {
         OpcService.SetValue(opcNode.Value);
-    } 
+    }
+
+    List<TreeItem> TreeDataSource = new List<TreeItem>();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        TreeDataSource.Add(new TreeItem
+        {
+            NodeId = "01",
+            NodeText = "Server Folder",
+            Expanded = true,
+            Child = new List<TreeItem>()
+        {
+                new TreeItem { NodeId = "01-01", NodeText = "Objects 1",
+                    Child = new List<TreeItem>()
+                {
+                        new TreeItem { NodeId = "01-01-01", NodeText = "Variable 45" },
+                        new TreeItem { NodeId = "01-01-02", NodeText = "Variable 3" },
+                        new TreeItem { NodeId = "01-01-03", NodeText = "Variable 3" }
+                    },
+                },
+                new TreeItem { NodeId = "01-02", NodeText = "Object 2", Expanded = true,
+                    Child = new List<TreeItem>()
+                {
+                        new TreeItem { NodeId = "01-02-01", NodeText = "Variable 5.6" },
+                        new TreeItem { NodeId = "01-02-02", NodeText = "Variable  56" },
+                        new TreeItem { NodeId = "01-02-03", NodeText = "Variable   56.7" },
+                    },
+                },
+                new TreeItem { NodeId = "01-03", NodeText = "Object 3",
+                    Child = new List<TreeItem>()
+                {
+                        new TreeItem { NodeId = "01-03-01", NodeText = "Variable 4.5" },
+                        new TreeItem { NodeId = "01-03-02", NodeText = "Variable 34.5" },
+                        new TreeItem { NodeId = "01-03-03", NodeText = "Variable 6.7" },
+                    }
+                },
+            },
+        });
+    }
+    class TreeItem
+    {
+        public string NodeId { get; set; }
+        public string NodeText { get; set; }
+        public string Icon { get; set; }
+        public bool Expanded { get; set; }
+        public bool Selected { get; set; }
+        public List<TreeItem> Child { get; set; }
+    }
 }
+<style>
+    .control_wrapper {
+        max-width: 500px;
+        margin: auto;
+        border: 1px solid #dddddd;
+        border-radius: 3px;
+    }
+</style>
