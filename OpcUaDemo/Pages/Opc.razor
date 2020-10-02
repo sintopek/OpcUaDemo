@@ -1,6 +1,10 @@
 ﻿@page "/opc"
 @using Syncfusion.Blazor.Navigations
 @using OpcUaDemo.Data
+@using Syncfusion.Blazor.Lists
+@using Syncfusion.Blazor.TreeGrid
+@using Syncfusion.Blazor.Grids
+@using System.ComponentModel.DataAnnotations;
 @inject OpcService OpcService
 
 <h3 class="text-center" style="text-transform:uppercase">Welcome to High Hill Software!!!</h3>
@@ -37,14 +41,7 @@
                 <label class="label"> VALUES</label>
             </div>
             <div class="form-group col-md-6">
-               
-                <div class="control-section">
-                    <div class="control_wrapper">
-                        <SfTreeView TValue="TreeItem" AllowEditing="true">
-                            <TreeViewFieldsSettings DataSource="@TreeDataSource" Id="NodeId" Text="NodeText" Expanded="Expanded" Child="@("Child")"></TreeViewFieldsSettings>
-                        </SfTreeView>
-                    </div>
-                </div>
+
             </div>
             <div class="form-group col-md-3">
                 <div class="text-center">
@@ -55,6 +52,21 @@
     </div>
 
 </EditForm>
+
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div class="row">
+
+            <SfTreeGrid @ref="MyGrid" DataSource="@TreeDataSource" Height="315" IdMapping="NodeID" ParentIdMapping="ParentID" TreeColumnIndex="0" AllowPaging="false">
+                <TreeGridColumns>
+                    <TreeGridColumn Field="NodeId" HeaderText="Node ID" Width="150"></TreeGridColumn>
+                </TreeGridColumns>
+            </SfTreeGrid>
+        </div>
+    </div>
+</div>
+
 
 @code {
     private OpcNode opcNode;
@@ -74,55 +86,80 @@
 
     void SetOpc()
     {
-        OpcService.SetValue(opcNode.Value);
+        MyGrid.DataSource.Append(new TreeItem { NodeId = 2, NodeText = "hiuhiuhiuh" });
+        MyGrid.Refresh();
+        //OpcService.SetValue(opcNode.Value);
     }
 
-    List<TreeItem> TreeDataSource = new List<TreeItem>();
+    SfTreeGrid<TreeItem> MyGrid;
+
+    public List<TreeItem> TreeDataSource { get; set; }
     protected override void OnInitialized()
     {
-        base.OnInitialized();
+        var b = new List<TreeItem>();
+
+        var a = new TreeItem { NodeId = 1, isParent = true, NodeText = "bkjh", Value = 23 };
+
+        TreeItem.tree = b;
+
+        b.Add(a);
+
+        this.TreeDataSource = b;
+
+
+        /*
+        this.TreeDataSource.Add(new TreeItem());
+        */
+
+        /*
         TreeDataSource.Add(new TreeItem
         {
-            NodeId = "01",
+            NodeId = 1,
             NodeText = "Server Folder",
-            Expanded = true,
-            Child = new List<TreeItem>()
-        {
-                new TreeItem { NodeId = "01-01", NodeText = "Objects 1",
-                    Child = new List<TreeItem>()
-                {
-                        new TreeItem { NodeId = "01-01-01", NodeText = "Variable 45" },
-                        new TreeItem { NodeId = "01-01-02", NodeText = "Variable 3" },
-                        new TreeItem { NodeId = "01-01-03", NodeText = "Variable 3" }
+            isParent = true,
+            tree = new List<TreeItem>()
+{
+                new TreeItem { NodeId = 2, ParentId = 1, NodeText = "Objects 1", isParent = true,
+                    tree = new List<TreeItem>()
+    {
+                        new TreeItem { NodeId = 3, ParentId = 2, NodeText = "Variable 45", Value = 45.5 },
+                        new TreeItem { NodeId = 4, ParentId = 2, NodeText = "Variable 3", Value = 3.5 },
+                        new TreeItem { NodeId = 5, ParentId = 2, NodeText = "Variable 3", Value = 33.5 }
                     },
                 },
-                new TreeItem { NodeId = "01-02", NodeText = "Object 2", Expanded = true,
-                    Child = new List<TreeItem>()
-                {
-                        new TreeItem { NodeId = "01-02-01", NodeText = "Variable 5.6" },
-                        new TreeItem { NodeId = "01-02-02", NodeText = "Variable  56" },
-                        new TreeItem { NodeId = "01-02-03", NodeText = "Variable   56.7" },
+                new TreeItem { NodeId = 6, ParentId = 1, NodeText = "Object 2", isParent = true,
+                    tree = new List<TreeItem>()
+    {
+                        new TreeItem { NodeId = 7, ParentId = 6, NodeText = "Variable 5.6", Value = 45.5 },
+                        new TreeItem { NodeId = 8, ParentId = 6, NodeText = "Variable  56", Value = 45.5 },
+                        new TreeItem { NodeId = 9, ParentId = 6, NodeText = "Variable   56.7", Value = 45.5 },
                     },
                 },
-                new TreeItem { NodeId = "01-03", NodeText = "Object 3",
-                    Child = new List<TreeItem>()
-                {
-                        new TreeItem { NodeId = "01-03-01", NodeText = "Variable 4.5" },
-                        new TreeItem { NodeId = "01-03-02", NodeText = "Variable 34.5" },
-                        new TreeItem { NodeId = "01-03-03", NodeText = "Variable 6.7" },
+                new TreeItem { NodeId = 10, ParentId = 1, NodeText = "Object 3", isParent = true,
+                    tree = new List<TreeItem>()
+    {
+                        new TreeItem { NodeId = 11, ParentId = 10, NodeText = "Variable 4.5", Value = 45.5 },
+                        new TreeItem { NodeId = 12, ParentId = 10, NodeText = "Variable 34.5", Value = 45.5 },
+                        new TreeItem { NodeId = 13, ParentId = 10, NodeText = "Variable 6.7", Value = 45.5 },
                     }
                 },
             },
         });
+        */
+
+        base.OnInitialized();
     }
-    class TreeItem
+    public class TreeItem
     {
-        public string NodeId { get; set; }
+        [Key]
+        public int NodeId { get; set; }
+        public int? ParentId { get; set; }
         public string NodeText { get; set; }
         public string Icon { get; set; }
-        public bool Expanded { get; set; }
+        public bool isParent { get; set; }
         public bool Selected { get; set; }
-        public List<TreeItem> Child { get; set; }
+        public double Value { get; set; }
+        public static List<TreeItem> tree { get; set; }
     }
 }
 <style>

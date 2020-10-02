@@ -36,7 +36,7 @@ namespace OpcUaDemo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mjk4NjIzQDMxMzgyZTMyMmUzMGQ5VXRpWDdpdElkK1dONUhsVEc4bWdzMFliQkFLQnl6RXhsb0wxUzkwVmc9");
+             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzI0MzE3QDMxMzgyZTMyMmUzMFQzdUp4ZkVlODVHcXRIRUc4ZlRnMDI2elZ6b2JtQmkySWYzc0pGZ2d4R2c9");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
