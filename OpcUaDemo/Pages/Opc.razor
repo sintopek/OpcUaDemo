@@ -1,10 +1,5 @@
 ﻿@page "/opc"
-@using Syncfusion.Blazor.Navigations
 @using OpcUaDemo.Data
-@using Syncfusion.Blazor.Lists
-@using Syncfusion.Blazor.TreeGrid
-@using Syncfusion.Blazor.Grids
-@using System.ComponentModel.DataAnnotations;
 @inject OpcService OpcService
 
 <h3 class="text-center" style="text-transform:uppercase">Welcome to High Hill Software!!!</h3>
@@ -32,134 +27,105 @@
     </div>
 
 </EditForm>
-<br />
-<EditForm Model="@opcNode" OnValidSubmit="@SetOpc">
-    <DataAnnotationsValidator />
-    <div style="">
-        <div class="row">
-            <div class="form-group col-md-3">
-                <label class="label"> VALUES</label>
-            </div>
-            <div class="form-group col-md-6">
 
-            </div>
-            <div class="form-group col-md-3">
-                <div class="text-center">
-                    <input type="submit" class="btn btn-primary" style="width: 200px !important;" value="Set" />
-                </div>
-            </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <RadzenTree Change="@LogChange" Data="@TreeObjects" Style="width: 100%; height: 300px">
+                <RadzenTreeLevel TextProperty="Key" ChildrenProperty="Children"  HasChildren="@(e => (e as OpcObject).HasChildren)" >
+                </RadzenTreeLevel>
+            </RadzenTree>
         </div>
-    </div>
+        <div class="col-sm-4">
+            <RadzenGrid @ref="grid" AllowFiltering="false" AllowPaging="true" PageSize="3" AllowSorting="false" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Multiple"
+                        Data="@TreeValues" TItem="OpcValue">
+                <Columns>
+                    <RadzenGridColumn Width="100px" TItem="OpcValue" Property="NodeIjkhkgghD" Title="Node ID">
+                        <Template Context="TI">
+                            <strong>@((TI as OpcValue).Key)</strong>
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn Width="100px" TItem="OpcValue" Property="NodeIjkhkgghD" Title="Value">
+                        <Template Context="TI">
+                            <strong>@((TI as OpcValue).Value)</strong>
+                        </Template>
+                        <EditTemplate Context="TI">
+                            <RadzenNumeric @bind-Value="TI.Value" Style="width:100%" />
+                        </EditTemplate>
+                    </RadzenGridColumn>
 
-</EditForm>
+                    <RadzenGridColumn TItem="OpcValue" Context="blahblah" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                        <Template Context="order">
+                            <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(order))">
+                            </RadzenButton>
+                        </Template>
+                        <EditTemplate Context="order">
+                            <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(order))">
+                            </RadzenButton>
+                            <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(order))">
+                            </RadzenButton>
+                        </EditTemplate>
+                    </RadzenGridColumn>
 
-
-<div class="col-lg-12 control-section">
-    <div class="content-wrapper">
-        <div class="row">
-
-            <SfTreeGrid @ref="MyGrid" DataSource="@TreeDataSource" Height="315" IdMapping="NodeID" ParentIdMapping="ParentID" TreeColumnIndex="0" AllowPaging="false">
-                <TreeGridColumns>
-                    <TreeGridColumn Field="NodeId" HeaderText="Node ID" Width="150"></TreeGridColumn>
-                </TreeGridColumns>
-            </SfTreeGrid>
+                </Columns>
+            </RadzenGrid>
         </div>
     </div>
 </div>
 
-
 @code {
-    private OpcNode opcNode;
+    RadzenGrid<OpcValue> grid;
+
+    void LogChange(TreeEventArgs args)
+    {
+        if (args.Value is OpcObject obj)
+        {
+            OpcService.ExpandTree(obj);
+            this.TreeValues = obj.Values.ToList();
+        }
+    }
+
+    void RowRender(RowRenderEventArgs<OpcValue> args)
+    {
+        args.Expandable = false;
+    }
 
     [Parameter]
     public RenderFragment Component { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        opcNode = await OpcService.GetValueAsync();
-    }
-
     protected async Task ConnectOpc()
     {
-        opcNode = await OpcService.GetValueAsync();
+        await OpcService.ConnectAsync();
+
+        var root = await OpcService.InitializeTree();
+        this.TreeObjects = new List<OpcObject> { root };
     }
 
-    void SetOpc()
+    public List<OpcObject> TreeObjects { get; set; }
+    public List<OpcValue> TreeValues { get; set; }
+
+    void EditRow(OpcValue obj)
     {
-        MyGrid.DataSource.Append(new TreeItem { NodeId = 2, NodeText = "hiuhiuhiuh" });
-        MyGrid.Refresh();
-        //OpcService.SetValue(opcNode.Value);
+        this.grid.EditRow(obj);
     }
 
-    SfTreeGrid<TreeItem> MyGrid;
-
-    public List<TreeItem> TreeDataSource { get; set; }
-    protected override void OnInitialized()
+    void OnUpdateRow(OpcValue obj)
     {
-        var b = new List<TreeItem>();
-
-        var a = new TreeItem { NodeId = 1, isParent = true, NodeText = "bkjh", Value = 23 };
-
-        TreeItem.tree = b;
-
-        b.Add(a);
-
-        this.TreeDataSource = b;
-
-
-        /*
-        this.TreeDataSource.Add(new TreeItem());
-        */
-
-        /*
-        TreeDataSource.Add(new TreeItem
-        {
-            NodeId = 1,
-            NodeText = "Server Folder",
-            isParent = true,
-            tree = new List<TreeItem>()
-{
-                new TreeItem { NodeId = 2, ParentId = 1, NodeText = "Objects 1", isParent = true,
-                    tree = new List<TreeItem>()
-    {
-                        new TreeItem { NodeId = 3, ParentId = 2, NodeText = "Variable 45", Value = 45.5 },
-                        new TreeItem { NodeId = 4, ParentId = 2, NodeText = "Variable 3", Value = 3.5 },
-                        new TreeItem { NodeId = 5, ParentId = 2, NodeText = "Variable 3", Value = 33.5 }
-                    },
-                },
-                new TreeItem { NodeId = 6, ParentId = 1, NodeText = "Object 2", isParent = true,
-                    tree = new List<TreeItem>()
-    {
-                        new TreeItem { NodeId = 7, ParentId = 6, NodeText = "Variable 5.6", Value = 45.5 },
-                        new TreeItem { NodeId = 8, ParentId = 6, NodeText = "Variable  56", Value = 45.5 },
-                        new TreeItem { NodeId = 9, ParentId = 6, NodeText = "Variable   56.7", Value = 45.5 },
-                    },
-                },
-                new TreeItem { NodeId = 10, ParentId = 1, NodeText = "Object 3", isParent = true,
-                    tree = new List<TreeItem>()
-    {
-                        new TreeItem { NodeId = 11, ParentId = 10, NodeText = "Variable 4.5", Value = 45.5 },
-                        new TreeItem { NodeId = 12, ParentId = 10, NodeText = "Variable 34.5", Value = 45.5 },
-                        new TreeItem { NodeId = 13, ParentId = 10, NodeText = "Variable 6.7", Value = 45.5 },
-                    }
-                },
-            },
-        });
-        */
-
-        base.OnInitialized();
     }
-    public class TreeItem
+
+    void SaveRow(OpcValue obj)
     {
-        [Key]
-        public int NodeId { get; set; }
-        public int? ParentId { get; set; }
-        public string NodeText { get; set; }
-        public string Icon { get; set; }
-        public bool isParent { get; set; }
-        public bool Selected { get; set; }
-        public double Value { get; set; }
-        public static List<TreeItem> tree { get; set; }
+        OpcService.SetValue(obj);
+
+        grid.UpdateRow(obj);
+    }
+
+    void CancelEdit(OpcValue obj)
+    {
+        grid.CancelEditRow(obj);
+
+        OpcService.Read(obj);
     }
 }
 <style>

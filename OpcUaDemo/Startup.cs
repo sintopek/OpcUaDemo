@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpcUaDemo.Data;
-using Syncfusion.Blazor;
 
 namespace OpcUaDemo
 {
@@ -30,13 +23,11 @@ namespace OpcUaDemo
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<OpcService>();
-            services.AddSyncfusionBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzI0MzE3QDMxMzgyZTMyMmUzMFQzdUp4ZkVlODVHcXRIRUc4ZlRnMDI2elZ6b2JtQmkySWYzc0pGZ2d4R2c9");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
