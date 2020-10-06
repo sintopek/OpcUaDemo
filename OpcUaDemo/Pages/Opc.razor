@@ -25,9 +25,7 @@
             </div>
         </div>
     </div>
-
 </EditForm>
-
 
 <div class="container">
     <div class="row">
@@ -54,7 +52,6 @@
                             <RadzenNumeric @bind-Value="TI.Value" Style="width:100%" />
                         </EditTemplate>
                     </RadzenGridColumn>
-
                     <RadzenGridColumn TItem="OpcValue" Context="blahblah" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
                         <Template Context="order">
                             <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(order))">
@@ -67,7 +64,6 @@
                             </RadzenButton>
                         </EditTemplate>
                     </RadzenGridColumn>
-
                 </Columns>
             </RadzenGrid>
         </div>
