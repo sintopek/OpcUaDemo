@@ -1,5 +1,4 @@
 ﻿@page "/opc"
-
 @using OpcUaDemo.Data
 @inject OpcService OpcService
 
@@ -26,48 +25,110 @@
             </div>
         </div>
     </div>
-
 </EditForm>
 
-<EditForm Model="@opcNode" OnValidSubmit="@SetOpc">
-    <DataAnnotationsValidator />
-    <div>
-        <div class="row">
-            <div class="form-group col-md-3">
-                <label class="label"> VALUES</label>
-            </div>
-            <div class="form-group col-md-6">
-                <InputText class="form-control" @bind-Value="opcNode.Value" />
-                <span class="err"><ValidationMessage For="@(() => opcNode.Value)" /></span>
-            </div>
-            <div class="form-group col-md-3">
-                <div class="text-center">
-                    <input type="submit" class="btn btn-primary" style="width: 200px !important;" value="Set" />
-                </div>
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <RadzenTree Change="@LogChange" Data="@TreeObjects" Style="width: 100%; height: 300px">
+                <RadzenTreeLevel TextProperty="Key" ChildrenProperty="Children"  HasChildren="@(e => (e as OpcObject).HasChildren)" >
+                </RadzenTreeLevel>
+            </RadzenTree>
+        </div>
+        <div class="col-sm-4">
+            <RadzenGrid @ref="grid" AllowFiltering="false" AllowPaging="true" PageSize="3" AllowSorting="false" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Multiple"
+                        Data="@TreeValues" TItem="OpcValue">
+                <Columns>
+                    <RadzenGridColumn Width="100px" TItem="OpcValue" Property="NodeIjkhkgghD" Title="Node ID">
+                        <Template Context="TI">
+                            <strong>@((TI as OpcValue).Key)</strong>
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn Width="100px" TItem="OpcValue" Property="NodeIjkhkgghD" Title="Value">
+                        <Template Context="TI">
+                            <strong>@((TI as OpcValue).Value)</strong>
+                        </Template>
+                        <EditTemplate Context="TI">
+                            <RadzenNumeric @bind-Value="TI.Value" Style="width:100%" />
+                        </EditTemplate>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="OpcValue" Context="blahblah" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                        <Template Context="order">
+                            <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(order))">
+                            </RadzenButton>
+                        </Template>
+                        <EditTemplate Context="order">
+                            <RadzenButton Icon="save" Size="ButtonSize.Small" Click="@((args) => SaveRow(order))">
+                            </RadzenButton>
+                            <RadzenButton Icon="cancel" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(order))">
+                            </RadzenButton>
+                        </EditTemplate>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
         </div>
     </div>
-
-</EditForm>
+</div>
 
 @code {
-    private OpcNode opcNode;
+    RadzenGrid<OpcValue> grid;
+
+    void LogChange(TreeEventArgs args)
+    {
+        if (args.Value is OpcObject obj)
+        {
+            OpcService.ExpandTree(obj);
+            this.TreeValues = obj.Values.ToList();
+        }
+    }
+
+    void RowRender(RowRenderEventArgs<OpcValue> args)
+    {
+        args.Expandable = false;
+    }
 
     [Parameter]
     public RenderFragment Component { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        opcNode = await OpcService.GetValueAsync();
-    }
-
     protected async Task ConnectOpc()
     {
-        opcNode = await OpcService.GetValueAsync();
+        await OpcService.ConnectAsync();
+
+        var root = await OpcService.InitializeTree();
+        this.TreeObjects = new List<OpcObject> { root };
     }
 
-    void SetOpc()
+    public List<OpcObject> TreeObjects { get; set; }
+    public List<OpcValue> TreeValues { get; set; }
+
+    void EditRow(OpcValue obj)
     {
-        OpcService.SetValue(opcNode.Value);
-    } 
+        this.grid.EditRow(obj);
+    }
+
+    void OnUpdateRow(OpcValue obj)
+    {
+    }
+
+    void SaveRow(OpcValue obj)
+    {
+        OpcService.SetValue(obj);
+
+        grid.UpdateRow(obj);
+    }
+
+    void CancelEdit(OpcValue obj)
+    {
+        grid.CancelEditRow(obj);
+
+        OpcService.Read(obj);
+    }
 }
+<style>
+    .control_wrapper {
+        max-width: 500px;
+        margin: auto;
+        border: 1px solid #dddddd;
+        border-radius: 3px;
+    }
+</style>
